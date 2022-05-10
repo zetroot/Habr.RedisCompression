@@ -12,6 +12,7 @@ namespace Habr.RedisCompression;
 [MemoryDiagnoser]
 public class CompressingBenchmarks
 {
+    const string Key = "benchmarkentry";
     private RedisClient client;
     private Model replaceValue;
 
@@ -34,8 +35,8 @@ public class CompressingBenchmarks
         };
         var poolManager = new RedisConnectionPoolManager(config);
         client = new RedisClient(poolManager, new MsgPackObjectSerializer(), config);
-        await client.Db0.AddAsync("bench", new Model());
-        replaceValue = new Model();
+        await client.Db0.AddAsync(Key, Model.Generate());
+        replaceValue = Model.Generate();
     }
 
     [GlobalCleanup]
@@ -47,7 +48,7 @@ public class CompressingBenchmarks
     [Benchmark]
     public async Task<bool> DoWork()
     {
-        _ = await client.Db0.GetAsync<Model>("bench");
-        return await client.Db0.ReplaceAsync("bench", replaceValue);
+        _ = await client.Db0.GetAsync<Model>(Key);
+        return await client.Db0.ReplaceAsync(Key, replaceValue);
     } 
 }

@@ -1,4 +1,10 @@
 ﻿using BenchmarkDotNet.Running;
 using Habr.RedisCompression;
 
-_ = BenchmarkRunner.Run<CompressingBenchmarks>();
+if(args.Contains("benchmark"))
+    _ = BenchmarkRunner.Run<CompressingBenchmarks>();
+else if (args.Contains("size"))
+{
+    var benchmark = new SizeBenchmark();
+    await benchmark.Execute(1000);
+}
