@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Habr.RedisCompression;
 using Habr.RedisCompression.Serializers;
 using StackExchange.Redis.Extensions.Core;
@@ -36,10 +37,13 @@ public class SizeBenchmark
         {
             Console.WriteLine($"Testing serializer {serializer}");
             var client = new RedisClient(_poolManager, serializer, _configuration);
+            var sw = Stopwatch.StartNew();
             foreach (var item in data)
                 await client.Db0.AddAsync(Guid.NewGuid().ToString(), item);
+            sw.Stop();
             var info = await client.Db0.GetInfoAsync();
             Console.WriteLine($"Used memory human\t{info["used_memory_human"]}");
+            Console.WriteLine($"Time taken for this\t{sw.Elapsed}");
             Console.WriteLine("---------------------------------------------------");
             await client.Db0.FlushDbAsync();
         }

@@ -6,6 +6,7 @@ namespace Habr.RedisCompression;
 [ProtoContract]
 public class Model
 {
+    [ProtoMember(32)] public int Counter { get; set; }
     [ProtoMember(31)]public DateTime SomeDate0 { get; set; }
     [ProtoMember(1)]public DateTime SomeDate1 { get; set; }
     [ProtoMember(2)]public DateTime SomeDate2 { get; set; }
@@ -40,8 +41,8 @@ public class Model
     [ProtoMember(30)]public List<InternalEntity> EntitiesArray { get; set; } = new List<InternalEntity>();
     public static Model Generate()
     {
-        //var rng = new Random();
-        var entryCount = 50;//rng.Next(50, 100);
+        var rng = new Random();
+        var entryCount = rng.Next(45, 55);
         var entries = new List<InternalEntity>(entryCount);
         for(int i = 0; i < entryCount; ++i)
             entries.Add(InternalEntity.Generate());

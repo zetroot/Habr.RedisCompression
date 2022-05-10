@@ -15,7 +15,7 @@ public class CompressorWrap : ISerializer
         using var sourceStream = new MemoryStream(_serializer.Serialize(item));
 
         using var compressStream = new MemoryStream();
-        using var deflateStream = new DeflateStream(compressStream, CompressionLevel.SmallestSize);
+        using var deflateStream = new DeflateStream(compressStream, CompressionLevel.Fastest);
 
         sourceStream.CopyTo(deflateStream);
         return compressStream.ToArray();

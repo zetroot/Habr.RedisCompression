@@ -14,7 +14,7 @@ public class CompressingBenchmarks
 {
     const string Key = "benchmarkentry";
     private RedisClient client;
-    private Model replaceValue;
+    private readonly Model origValue = Model.Generate();
 
     [ParamsSource(nameof(Serializers))]
     public ISerializer Serializer;
@@ -35,8 +35,7 @@ public class CompressingBenchmarks
         };
         var poolManager = new RedisConnectionPoolManager(config);
         client = new RedisClient(poolManager, new MsgPackObjectSerializer(), config);
-        await client.Db0.AddAsync(Key, Model.Generate());
-        replaceValue = Model.Generate();
+        await client.Db0.AddAsync(Key, origValue);
     }
 
     [GlobalCleanup]
@@ -48,7 +47,8 @@ public class CompressingBenchmarks
     [Benchmark]
     public async Task<bool> DoWork()
     {
-        _ = await client.Db0.GetAsync<Model>(Key);
-        return await client.Db0.ReplaceAsync(Key, replaceValue);
+        var model = await client.Db0.GetAsync<Model>(Key);
+        model.Counter++;
+        return await client.Db0.ReplaceAsync(Key, model);
     } 
 }
