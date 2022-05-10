@@ -32,6 +32,7 @@ public class SizeBenchmark
         var data = new Tuple<string,Model>[size];
         for (int i = 0; i < size; i++)
             data[i] = new Tuple<string, Model>(Guid.NewGuid().ToString(),Model.Generate());
+        Console.WriteLine("---------------------------------------------------");
         
         foreach (var serializer in _serializers)
         {
