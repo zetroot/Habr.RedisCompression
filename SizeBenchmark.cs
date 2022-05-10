@@ -29,17 +29,16 @@ public class SizeBenchmark
     public async Task Execute(int size)
     {
         Console.WriteLine($"Generating data - {size} items");
-        var data = new List<Model>(size);
+        var data = new Tuple<string,Model>[size];
         for (int i = 0; i < size; i++)
-            data.Add(Model.Generate());
+            data[i] = new Tuple<string, Model>(Guid.NewGuid().ToString(),Model.Generate());
         
         foreach (var serializer in _serializers)
         {
             Console.WriteLine($"Testing serializer {serializer}");
             var client = new RedisClient(_poolManager, serializer, _configuration);
             var sw = Stopwatch.StartNew();
-            foreach (var item in data)
-                await client.Db0.AddAsync(Guid.NewGuid().ToString(), item);
+            await client.Db0.AddAllAsync(data);
             sw.Stop();
             var info = await client.Db0.GetInfoAsync();
             Console.WriteLine($"Used memory human\t{info["used_memory_human"]}");
